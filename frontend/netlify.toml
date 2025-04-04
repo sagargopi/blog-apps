@@ -1,6 +1,10 @@
 [build]
-  publish = "dist"
+  base = "frontend"
   command = "chmod +x build.sh && ./build.sh"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/*"
