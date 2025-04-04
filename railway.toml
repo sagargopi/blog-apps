@@ -1,6 +1,7 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "backend/Dockerfile"
+buildDirectory = "backend"
 
 [deploy]
 startCommand = "cd backend && python manage.py migrate && gunicorn blogbackend.wsgi:application"
@@ -8,6 +9,9 @@ healthcheckPath = "/admin/"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
+
+[deploy.envs]
+PYTHON_VERSION = "3.9"
 
 [phases.setup]
 nixPkgs = ["python39"]
