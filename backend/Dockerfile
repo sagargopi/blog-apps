@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.9.16-slim as base
 
 WORKDIR /app
 
@@ -8,18 +8,20 @@ RUN apt-get update \
         build-essential \
         python3-dev \
         libpq-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Upgrade pip and install wheel
-RUN pip install --no-cache-dir --upgrade pip wheel setuptools
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir wheel setuptools \
+    && pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
 COPY . .
+
+# Create non-root user
+RUN useradd -m myuser
+USER myuser
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -28,10 +30,6 @@ ENV PYTHONUNBUFFERED=1 \
 
 # Expose port
 EXPOSE 8000
-
-# Create and switch to non-root user
-RUN useradd -m myuser
-USER myuser
 
 # Run migrations and start server
 CMD python manage.py migrate && gunicorn blogbackend.wsgi:application --bind 0.0.0.0:$PORT
