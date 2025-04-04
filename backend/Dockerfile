@@ -11,10 +11,8 @@ RUN apt-get update \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements.txt first to leverage Docker cache
-COPY requirements.txt .
-
 # Install Python dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir wheel setuptools \
     && pip install --no-cache-dir -r requirements.txt
 
@@ -34,4 +32,4 @@ ENV PYTHONUNBUFFERED=1 \
 EXPOSE 8000
 
 # Run migrations and start server
-CMD python manage.py migrate && gunicorn blogbackend.wsgi:application --bind 0.0.0.0:$PORT
+CMD python manage.py migrate && gunicorn blogbackend.wsgi:application --bind 0.0.0.0:$PORT --workers=2 --threads=4
