@@ -1,0 +1,11 @@
+[build]
+builder = "nixpacks"
+buildCommand = "cd backend && pip install -r requirements.txt"
+
+[deploy]
+startCommand = "cd backend && gunicorn blogbackend.wsgi:application"
+healthcheckPath = "/admin/"
+healthcheckTimeout = 100
+
+[phases.setup]
+nixPkgs = ["python39"]
